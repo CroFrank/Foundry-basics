@@ -19,11 +19,11 @@ contract FundMeTeTest is Test {
         assertEq(fundMe.MINIMUM_USD(), 5e18);
     }
     function testOwnerIsMsgSender() public view {
-        assertEq(fundMe.i_owner(), msg.sender);
+        assertEq(fundMe.getOwner(), msg.sender);
     }
     function testPriceFeedVersionIsAccurate() public view {
         uint256 version = fundMe.getVersion();
-        assertEq(version, 4);
+        assertEq(version, 0);
     }
 
     function testSendNotEnoughEth() public {
@@ -56,5 +56,63 @@ contract FundMeTeTest is Test {
     function testOnlyOwnerCanWithdraw() public funded {
         vm.expectRevert();
         fundMe.withdraw();
+    }
+    function testWithdrawSingleFunder() public funded {
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
+        uint256 startingFundMeBalance = address(fundMe).balance;
+        vm.prank(fundMe.getOwner());
+        fundMe.withdraw();
+        uint256 endingOwnerBalance = fundMe.getOwner().balance;
+        uint256 endingFundMeBalance = address(fundMe).balance;
+        assertEq(endingFundMeBalance, 0);
+        assertEq(
+            startingOwnerBalance + startingFundMeBalance,
+            endingOwnerBalance
+        );
+    }
+    function testWithdrawMultipleFunders() public {
+        uint160 numberOfFunders = 3;
+
+        for (uint160 i = 1; i <= numberOfFunders; i++) {
+            hoax(address(i), 1e18);
+            fundMe.fund{value: 2e17}();
+        }
+        uint256 startingFundMeBalance = address(fundMe).balance;
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
+
+        vm.prank(fundMe.getOwner());
+        fundMe.withdraw();
+
+        uint256 endingFundMeBalance = address(fundMe).balance;
+        uint256 endingOwnerBalance = fundMe.getOwner().balance;
+
+        assert(endingFundMeBalance == 0);
+        assertEq(
+            startingOwnerBalance + startingFundMeBalance,
+            endingOwnerBalance
+        );
+    }
+
+    function testCheaperWithdrawMultipleFunders() public {
+        uint160 numberOfFunders = 3;
+
+        for (uint160 i = 1; i <= numberOfFunders; i++) {
+            hoax(address(i), 1e18);
+            fundMe.fund{value: 2e17}();
+        }
+        uint256 startingFundMeBalance = address(fundMe).balance;
+        uint256 startingOwnerBalance = fundMe.getOwner().balance;
+
+        vm.prank(fundMe.getOwner());
+        fundMe.cheaperWithdraw();
+
+        uint256 endingFundMeBalance = address(fundMe).balance;
+        uint256 endingOwnerBalance = fundMe.getOwner().balance;
+
+        assert(endingFundMeBalance == 0);
+        assertEq(
+            startingOwnerBalance + startingFundMeBalance,
+            endingOwnerBalance
+        );
     }
 }

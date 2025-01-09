@@ -11,7 +11,7 @@ contract FundMe {
     using PriceConverter for uint256;
 
     address[] private s_funders;
-    address public immutable i_owner;
+    address private immutable i_owner;
     uint256 public constant MINIMUM_USD = 5 * 10 ** 18;
     AggregatorV3Interface private s_priceFeed;
 
@@ -40,6 +40,23 @@ contract FundMe {
     modifier onlyOwner() {
         if (msg.sender != i_owner) revert FundMe_NotOwner();
         _;
+    }
+    function cheaperWithdraw() public onlyOwner {
+        uint256 fundersLength = s_funders.length;
+        for (
+            uint256 funderIndex = 0;
+            funderIndex < fundersLength;
+            funderIndex++
+        ) {
+            address funder = s_funders[funderIndex];
+            s_addressToAmountFunded[funder] = 0;
+        }
+        s_funders = new address[](0);
+
+        (bool callSuccess, ) = payable(msg.sender).call{
+            value: address(this).balance
+        }("");
+        require(callSuccess, "Call failed");
     }
 
     function withdraw() public onlyOwner {
@@ -88,5 +105,11 @@ contract FundMe {
 
     function getFunder(uint256 index) external view returns (address) {
         return s_funders[index];
+    }
+    function getOwner() external view returns (address) {
+        return i_owner;
+    }
+    function getFunders() external view returns (address[] memory) {
+        return s_funders;
     }
 }

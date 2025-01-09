@@ -1,1 +1,1 @@
-remappings =["@chainlink/=lib/chainlink-brownie-contracts/"]
+@chainlink/=lib/chainlink-brownie-contracts/
