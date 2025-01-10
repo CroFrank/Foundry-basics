@@ -2,10 +2,10 @@
 pragma solidity ^0.8.18;
 
 import {Test, console} from "forge-std/Test.sol";
-import {FundMe} from "../src/FundMe.sol";
-import {DeployFundMe} from "../script/DeployFundMe.s.sol";
+import {FundMe} from "../../src/FundMe.sol";
+import {DeployFundMe} from "../../script/DeployFundMe.s.sol";
 
-contract FundMeTeTest is Test {
+contract FundMeTest is Test {
     FundMe fundMe;
     address USER = makeAddr("user");
     address USER2 = makeAddr("user2");
