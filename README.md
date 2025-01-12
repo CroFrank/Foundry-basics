@@ -10,11 +10,11 @@ Withdraw Funds: Only the contract owner can withdraw the accumulated funds.
 Testing: Comprehensive tests are implemented to verify contract functionality.
 
 ## Technologies Used
--Solidity: Smart contract development.
--Chainlink: For fetching real-time price feeds.
--Foundry: Development environment for compiling, testing, and deploying contracts.
--MetaMask: Browser wallet for transactions.
--Anvil: Local Foundry testing network for rapid development.
+- Solidity: Smart contract development.
+- Chainlink: For fetching real-time price feeds.
+- Foundry: Development environment for compiling, testing, and deploying contracts.
+- MetaMask: Browser wallet for transactions.
+- Anvil: Local Foundry testing network for rapid development.
 
 ## Foundry Usage
 
